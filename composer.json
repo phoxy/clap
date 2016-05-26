@@ -1,0 +1,6 @@
+{
+ "require":
+  {
+    "enelar/phpantomjs": "~0.0"
+  }
+}
