@@ -31,13 +31,21 @@ var page = require('webpage').create();
 for (var k in args.page_settings)
   page.settings[k] = args.page_settings[k];
 
+for (var k in args.cookies)
+  phantom.addCookie(args.cookies[k]);
+
+
 page.onResourceTimeout = function(e) {
   console.log('timeout');
   phantom.exit(1);
 };
 
-for (var k in args.cookies)
-  phantom.addCookie(args.cookies[k]);
+page.onResourceRequested = function(requestData, request) {
+    if ((/google-analytics\.com/gi).test(requestData['url'])){
+        console.log('Request to GA. Aborting: ' + requestData['url']);
+        request.abort();
+    }
+};
 
 page.onResourceError = function(resourceError) {
     page.reason = resourceError.errorString;
@@ -67,10 +75,15 @@ page.open(args.url, function (status)
   }
   else
   {
-
     page.onCallback = function()
     {
-      console.log("CLAP");
+      page.evaluate(function()
+      {
+        var scripts = div.getElementsByTagName('script');
+        var i = scripts.length;
+        while (i--)
+          scripts[i].parentNode.removeChild(scripts[i]);
+      });
 
       exit_now();
     }
