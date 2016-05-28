@@ -83,6 +83,12 @@ page.open(args.url, function (status)
         var i = scripts.length;
         while (i--)
           scripts[i].parentNode.removeChild(scripts[i]);
+
+        var meta = div.getElementsByTagName('meta');
+        var i = meta.length;
+        while (i--)
+          if (meta.getAttribute('name') == 'fragment')
+            meta[i].parentNode.removeChild(meta[i]);
       });
 
       exit_now();
